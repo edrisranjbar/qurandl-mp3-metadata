@@ -1,6 +1,6 @@
 import os
 import eyed3 as mp3
-#import title
+import title
 QARI_NAME = input("Enter qari name: ")
 for i in range(1,115):
     try:
