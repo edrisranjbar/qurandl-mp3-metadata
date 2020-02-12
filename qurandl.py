@@ -17,6 +17,7 @@ for i in range(1,115):
         title = ""
         mp3.tag.title(title)
         mp3.tag.track_num = i
+        mp3.tag.images.set(3, open('cover.jpg','rb').read(),'image/jpeg')
         mp3.tag.save()
     except:
         continue
