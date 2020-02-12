@@ -17,5 +17,6 @@ for i in range(1,115):
         title = ""
         mp3.tag.title(title)
         mp3.tag.track_num = i
+        mp3.tag.save()
     except:
         continue
