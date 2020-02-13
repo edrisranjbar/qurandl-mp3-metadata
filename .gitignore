@@ -1,3 +1,5 @@
 env
 *.mp3
+*.swo
 *.swp
+__pycache__
