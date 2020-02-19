@@ -1,4 +1,4 @@
-title = {
+FILE_TITLES = {
     "001": "Al-Fatihah", "002": "Al-Baqarah" ,"003": "Ali 'Imran", "004": "An-Nisa",
     "005": "Al-Ma'idah", "006": "Al-An'am", "007": "Al-A'raf", "008": "Al-Anfal",
     "009": "At-Tawbah", "010": "Yunus", "011": "Hud", "012": "Yusuf",
