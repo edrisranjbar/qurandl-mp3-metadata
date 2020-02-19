@@ -1,5 +1,7 @@
 env
+.idea
 *.mp3
 *.swo
 *.swp
+.vscode
 __pycache__
