@@ -6,6 +6,9 @@ from selenium import webdriver
 import wget
 
 def display_menu():
+    """
+        DISPLAY A MENU OF WHAT USER CAN DO
+    """
     selected = input("""WHICH ONE? (1-2)
     1) DOWNLOAD MP3 QURAN FILES IN A WEBPAGE
     2) MODIFY NAME AND METADATA
@@ -37,6 +40,7 @@ def download_all_mp3_files(url):
         except:
             print("Can't download {}".format(link))
     print("Download Completed!")
+    modify_metatag()
     return True
 
 def modify_metatag():
