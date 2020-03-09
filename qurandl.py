@@ -1,9 +1,9 @@
-import os
+import os,re,wget,zipfile
+import title
+import shutil
 import eyed3 as the_mp3
 from mutagen.mp3 import MP3
-import title
 from selenium import webdriver
-import wget
 
 def display_menu():
     """
@@ -73,8 +73,25 @@ def modify_metatag():
             the_mp3.tag.save()
         except:
             continue
+    move_to_subfolder(QARI)
     return True
 
+def move_to_subfolder(folder_name):
+    # Make a directory
+    os.mkdir(folder_name)
+    # Move all mp3 files to subfolder
+    current_path = os.getcwd()
+    files = os.listdir(current_path)
+    regex = r"(.mp3)"
+    for file in files:
+        if (re.search(regex, file)):
+            file = os.path.join(current_path, file)
+            shutil.move(file, current_path + "/" + folder_name)
+    print("mp3 files moved into subfolder!")
+    # Zip subfolder
+    shutil.make_archive(folder_name, 'zip', folder_name)
+    # Remove subfolder
+    shutil.rmtree(folder_name)
 
 if __name__ == "__main__":
     display_menu()
