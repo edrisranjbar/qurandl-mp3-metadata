@@ -1,29 +1,72 @@
-import os,re,wget,zipfile
-import title
+import os, re, wget, zipfile
+import title,config
 import shutil
 import eyed3 as the_mp3
 from mutagen.mp3 import MP3
 from selenium import webdriver
+from ftplib import FTP
+
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+class FtpUploadTracker:
+    sizeWritten = 0
+    totalSize = 0
+    lastShownPercent = 0
+
+    def __init__(self, totalSize):
+        self.totalSize = totalSize
+
+    def handle(self, block):
+        self.sizeWritten += 1024
+        percentComplete = round((self.sizeWritten / self.totalSize) * 100,2)
+
+        if self.lastShownPercent != percentComplete:
+            self.lastShownPercent = percentComplete
+            print(f"{bcolors.OKGREEN}{str(percentComplete)} percent uploaded{bcolors.ENDC}")
+
 
 def display_menu():
     """
         DISPLAY A MENU OF WHAT USER CAN DO
     """
-    selected = input("""WHICH ONE? (1-2)
+    print(f"{bcolors.HEADER}{bcolors.BOLD}************************************************{bcolors.ENDC}")
+    print(f"{bcolors.HEADER}{bcolors.BOLD}*****  Quran Download - Alsalamo Alaykom  ******{bcolors.ENDC}")
+    print(f"{bcolors.HEADER}{bcolors.BOLD}************************************************{bcolors.ENDC}")
+    selected = input(f"""{bcolors.WARNING}WHICH ONE? (1-2) {bcolors.ENDC}
     1) DOWNLOAD MP3 QURAN FILES IN A WEBPAGE
     2) MODIFY NAME AND METADATA
+    3) UPLOAD
     PLEASE SPECIFIE WITH A NUMBER: 
     """)
     if selected == "1":
-        url = input("Type your url: ")
-        download_all_mp3_files(url)
+        url = input(f"Type your url: {bcolors.WARNING}{bcolors.BOLD}(Enter b to back) {bcolors.ENDC}")
+        if url == "b":
+            display_menu()
+        else:
+            download_all_mp3_files(url)
 
     elif selected == "2":
         modify_metatag()
-
+    elif selected == "3":
+        filename = input(f"ENTER FILE NAME: {bcolors.WARNING}{bcolors.BOLD}(Enter b to back) {bcolors.ENDC}")
+        if filename == "b":
+            display_menu()
+        else:
+            upload(filename, config.SERVER, config.USERNAME, config.PASSWORD)
     else:
-        print("PLEASE CHOOSE AGAIN!")
+        clear()
+        print(f"{bcolors.FAIL}{bcolors.BOLD}PLEASE CHOOSE AGAIN!{bcolors.ENDC}")
         display_menu()
+
 
 def download_all_mp3_files(url):
     """
@@ -42,6 +85,7 @@ def download_all_mp3_files(url):
     print("Download Completed!")
     modify_metatag()
     return True
+
 
 def modify_metatag():
     """
@@ -76,6 +120,7 @@ def modify_metatag():
     move_to_subfolder(QARI)
     return True
 
+
 def move_to_subfolder(folder_name):
     # Make a directory
     os.mkdir(folder_name)
@@ -93,5 +138,29 @@ def move_to_subfolder(folder_name):
     # Remove subfolder
     shutil.rmtree(folder_name)
 
+
+def upload(filename, server, username, password):
+    total_size = os.path.getsize(filename)
+    upload_tracker = FtpUploadTracker(int(total_size))
+    """ Upload .zip file to dl.qurandl.com and returns True or False """
+    ftp = FTP(host=server, user=username, passwd=password)
+    try:
+        ftp.login(user=username, passwd=password)
+    except:
+        pass
+    ftp.cwd("public_html")
+    print(ftp.retrlines("LIST"))
+    # Upload file
+    with open(filename, 'rb') as file:
+        ftp.storbinary("STOR " + filename, file,1024,upload_tracker.handle)
+    file.close()
+    ftp.quit()
+
+
+def clear():
+    os.system('clear')
+
+
 if __name__ == "__main__":
+    clear()
     display_menu()

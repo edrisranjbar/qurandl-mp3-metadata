@@ -1,4 +1,4 @@
-# qurandl-mp3-metadata
+# Quran Download script
 This is an script to automate a lot of tasks about qurandl project. I try to make it clean and Readable for you and i hope you contribute and maybe use it wherever you want.
 Thank you.
 
@@ -9,10 +9,12 @@ Thank you.
 - [x] Capitalize qari name
 - [x] Display a menu to select an item
 - [x] When we download new mp3 files by this script; it should change metadata too
-- [x] Move ```.mp3``` files to a subfolder with the name of Qari its self
-- [x] Zip folder and finally delete the subfolder
-- [ ] Upload zip file into ```qurandl``` download host via ```SFTP```
-- [ ] Generate wordpress shortcode for add new post on [www.qurandl.com]('www.qurandl.com')
+- [x] Move ```.mp3``` files to a sub folder with the name of Qari its self
+- [x] Zip folder and finally delete the sub folder
+- [x] Upload zip file into ```qurandl``` download host via ```SFTP```
+- [ ] move upload file in local to parent folder
+- [ ] Extract uploaded file in host
+- [ ] Generate WordPress short code for add new post on [www.qurandl.com]('www.qurandl.com')
 - [ ] Logging
 
 ## Contribution
