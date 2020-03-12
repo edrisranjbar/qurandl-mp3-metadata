@@ -31,6 +31,7 @@ class FtpUploadTracker:
 
         if self.lastShownPercent != percentComplete:
             self.lastShownPercent = percentComplete
+            clear()
             print(f"{bcolors.OKGREEN}{str(percentComplete)} percent uploaded{bcolors.ENDC}")
 
 
@@ -132,12 +133,11 @@ def move_to_subfolder(folder_name):
         if (re.search(regex, file)):
             file = os.path.join(current_path, file)
             shutil.move(file, current_path + "/" + folder_name)
-    print("mp3 files moved into subfolder!")
+    print("mp3 files moved into sub folder!")
     # Zip subfolder
-    shutil.make_archive(folder_name, 'zip', folder_name)
+    shutil.make_archive(folder_name, 'zip', folder_name,folder_name) # TODO: check that folder itself is in zip file
     # Remove subfolder
     shutil.rmtree(folder_name)
-
 
 def upload(filename, server, username, password):
     total_size = os.path.getsize(filename)
@@ -149,13 +149,16 @@ def upload(filename, server, username, password):
     except:
         pass
     ftp.cwd("public_html")
-    print(ftp.retrlines("LIST"))
+    # print(ftp.retrlines("LIST"))
     # Upload file
     with open(filename, 'rb') as file:
         ftp.storbinary("STOR " + filename, file,1024,upload_tracker.handle)
+        # TODO: Extract zip file
+        # TODO: Move zip file into extracted folder
     file.close()
     ftp.quit()
-
+    # TODO: move local zip file into parent folder
+    return True
 
 def clear():
     os.system('clear')
