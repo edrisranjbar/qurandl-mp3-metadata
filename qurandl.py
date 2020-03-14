@@ -1,13 +1,19 @@
-import os, re, wget, zipfile
-import title,config
+import os
+import re
 import shutil
-import eyed3 as the_mp3
-from mutagen.mp3 import MP3
-from selenium import webdriver
 from ftplib import FTP
 
+import eyed3 as the_mp3
+import wget
+from mutagen.mp3 import MP3
+from selenium import webdriver
 
-class bcolors:
+import config
+import title
+
+
+class Colors:
+    """ IN ORDER TO USE COLORS OR SOME STYLING OPTIONS WE SHOULD USE THESE CONTANTS EASILY! """
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKGREEN = '\033[92m'
@@ -18,38 +24,41 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 class FtpUploadTracker:
-    sizeWritten = 0
-    totalSize = 0
-    lastShownPercent = 0
+    """ HERE WE'RE LOGGING UPLOAD STATUS """
+    size_written = 0
+    total_size = 0
+    last_shown_percent = 0
 
-    def __init__(self, totalSize):
-        self.totalSize = totalSize
+    def __init__(self, total_size):
+        """ INITIALIZING TOTAL SIZE OF FILE TO UPLOAD """
+        self.total_size = total_size
 
     def handle(self, block):
-        self.sizeWritten += 1024
-        percentComplete = round((self.sizeWritten / self.totalSize) * 100,2)
+        """ HANDLE FTP UPLOAD PROGRESS """
+        self.size_written += 1024
+        percent_complete = round((self.size_written / self.total_size) * 100, 2)
 
-        if self.lastShownPercent != percentComplete:
-            self.lastShownPercent = percentComplete
+        if self.last_shown_percent != percent_complete:
+            self.last_shown_percent = percent_complete
             clear()
-            print(f"{bcolors.OKGREEN}{str(percentComplete)} percent uploaded{bcolors.ENDC}")
+            print(f"{Colors.OKGREEN}{str(percent_complete)} percent uploaded{Colors.ENDC}")
 
 
 def display_menu():
     """
         DISPLAY A MENU OF WHAT USER CAN DO
     """
-    print(f"{bcolors.HEADER}{bcolors.BOLD}************************************************{bcolors.ENDC}")
-    print(f"{bcolors.HEADER}{bcolors.BOLD}*****  Quran Download - Alsalamo Alaykom  ******{bcolors.ENDC}")
-    print(f"{bcolors.HEADER}{bcolors.BOLD}************************************************{bcolors.ENDC}")
-    selected = input(f"""{bcolors.WARNING}WHICH ONE? (1-2) {bcolors.ENDC}
+    print(f"{Colors.HEADER}{Colors.BOLD}************************************************{Colors.ENDC}")
+    print(f"{Colors.HEADER}{Colors.BOLD}*****  Quran Download - Alsalamo Alaykom  ******{Colors.ENDC}")
+    print(f"{Colors.HEADER}{Colors.BOLD}************************************************{Colors.ENDC}")
+    selected = input(f"""{Colors.WARNING}WHICH ONE? (1-2) {Colors.ENDC}
     1) DOWNLOAD MP3 QURAN FILES IN A WEBPAGE
     2) MODIFY NAME AND METADATA
     3) UPLOAD
     PLEASE SPECIFIE WITH A NUMBER: 
     """)
     if selected == "1":
-        url = input(f"Type your url: {bcolors.WARNING}{bcolors.BOLD}(Enter b to back) {bcolors.ENDC}")
+        url = input(f"Type your url: {Colors.WARNING}{Colors.BOLD}(Enter b to back) {Colors.ENDC}")
         if url == "b":
             display_menu()
         else:
@@ -58,14 +67,14 @@ def display_menu():
     elif selected == "2":
         modify_metatag()
     elif selected == "3":
-        filename = input(f"ENTER FILE NAME: {bcolors.WARNING}{bcolors.BOLD}(Enter b to back) {bcolors.ENDC}")
+        filename = input(f"ENTER FILE NAME: {Colors.WARNING}{Colors.BOLD}(Enter b to back) {Colors.ENDC}")
         if filename == "b":
             display_menu()
         else:
             upload(filename, config.SERVER, config.USERNAME, config.PASSWORD)
     else:
         clear()
-        print(f"{bcolors.FAIL}{bcolors.BOLD}PLEASE CHOOSE AGAIN!{bcolors.ENDC}")
+        print(f"{Colors.FAIL}{Colors.BOLD}PLEASE CHOOSE AGAIN!{Colors.ENDC}")
         display_menu()
 
 
@@ -123,6 +132,7 @@ def modify_metatag():
 
 
 def move_to_subfolder(folder_name):
+    """ MOVE MP3 FILES TO A SUB FOLDER AND ZIP THEME ALL TOGETHER IN A DIRECTORY """
     # Make a directory
     os.mkdir(folder_name)
     # Move all mp3 files to subfolder
@@ -130,19 +140,19 @@ def move_to_subfolder(folder_name):
     files = os.listdir(current_path)
     regex = r"(.mp3)"
     for file in files:
-        if (re.search(regex, file)):
+        if re.search(regex, file):
             file = os.path.join(current_path, file)
             shutil.move(file, current_path + "/" + folder_name)
     print("mp3 files moved into sub folder!")
     # Zip subfolder
-    shutil.make_archive(folder_name, 'zip', folder_name,folder_name) # TODO: check that folder itself is in zip file
+    shutil.make_archive(folder_name, 'zip', folder_name, folder_name) # TODO: check that folder itself is in zip file
     # Remove subfolder
     shutil.rmtree(folder_name)
 
 def upload(filename, server, username, password):
+    """ Upload .zip file to dl.qurandl.com and returns True or False """
     total_size = os.path.getsize(filename)
     upload_tracker = FtpUploadTracker(int(total_size))
-    """ Upload .zip file to dl.qurandl.com and returns True or False """
     ftp = FTP(host=server, user=username, passwd=password)
     try:
         ftp.login(user=username, passwd=password)
@@ -152,18 +162,19 @@ def upload(filename, server, username, password):
     # print(ftp.retrlines("LIST"))
     # Upload file
     with open(filename, 'rb') as file:
-        ftp.storbinary("STOR " + filename, file,1024,upload_tracker.handle)
+        ftp.storbinary("STOR " + filename, file, 1024, upload_tracker.handle)
         # TODO: Extract zip file
         # TODO: Move zip file into extracted folder
     file.close()
     ftp.quit()
-    # TODO: move local zip file into parent folder
+    # Move file locally to parent directory
+    shutil.move(file, "..")
     return True
 
 def clear():
+    """ CLEAR THE TERMINAL SCREEN """
     os.system('clear')
 
 
 if __name__ == "__main__":
-    clear()
     display_menu()
