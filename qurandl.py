@@ -42,6 +42,7 @@ class FtpUploadTracker:
             self.last_shown_percent = percent_complete
             clear()
             print(f"{Colors.OKGREEN}{str(percent_complete)} percent uploaded{Colors.ENDC}")
+        return True
 
 
 def display_menu():
@@ -134,20 +135,29 @@ def modify_metatag():
 def move_to_subfolder(folder_name):
     """ MOVE MP3 FILES TO A SUB FOLDER AND ZIP THEME ALL TOGETHER IN A DIRECTORY """
     # Make a directory
-    os.mkdir(folder_name)
-    # Move all mp3 files to subfolder
     current_path = os.getcwd()
+    try:
+        os.mkdir(folder_name)
+        os.chdir(current_path + "/" + folder_name)
+        os.mkdir(folder_name)
+        os.chdir('..')
+    except FileExistsError:
+        print(f"{Colors.FAIL}Folder already exists!{Colors.ENDC}")
+    # Move all mp3 files to subfolder
     files = os.listdir(current_path)
     regex = r"(.mp3)"
     for file in files:
         if re.search(regex, file):
             file = os.path.join(current_path, file)
-            shutil.move(file, current_path + "/" + folder_name)
-    print("mp3 files moved into sub folder!")
+            shutil.move(file, current_path + "/" + folder_name + "/" + folder_name)
+    print(f"{Colors.OKGREEN}mp3 files moved into sub folder!{Colors.ENDC}")
     # Zip subfolder
-    shutil.make_archive(folder_name, 'zip', folder_name, folder_name) # TODO: check that folder itself is in zip file
+    print("Zipping files...")
+    shutil.make_archive(folder_name, 'zip',folder_name)
+    print(f"{Colors.OKGREEN}Zipping process completed!{Colors.ENDC}")
     # Remove subfolder
     shutil.rmtree(folder_name)
+    print("Folder removed!")
 
 def upload(filename, server, username, password):
     """ Upload .zip file to dl.qurandl.com and returns True or False """
