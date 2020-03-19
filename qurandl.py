@@ -45,28 +45,6 @@ class FtpUploadTracker:
             print(f"{Colors.OKGREEN}{str(percent_complete)} percent uploaded{Colors.ENDC}")
 
 
-def generate_short_code(zip_file_name,folder_name):
-    """
-        ** Call it before zipping folder **
-        Generate short code for wordpress to display proper content;
-        Save file as short_code.txt
-        Return Boolean as a result
-    """
-    codes = ""
-    codes += f'[download link="{config.SITE_URL}{folder_name}/{zip_file_name}"]'
-    codes += '[table_start]'
-    # for each mp3 file in folder create new [quran] shortcode
-    current_path = os.getcwd()    
-    quran_files = os.listdir(current_path + "/" + folder_name)
-    regex = r"(.mp3)"
-    for file in quran_files:
-        if re.search(regex, file):
-            file_name = os.path.join(current_path, file)
-            i = null          
-            codes += f'[quran src="{folder_name}/{file_name}" number="{i}"]'
-    codes += '[table_end]'
-
-
 def extract_number(raw_string):
     raw_string = raw_string.replace(".mp3", "")
     raw_string = filter(lambda num:num, raw_string)
@@ -76,6 +54,34 @@ def extract_number(raw_string):
         if char.isnumeric():
             numbers += char
     return numbers
+
+
+def generate_short_code(zip_file_name,folder_name):
+    """
+        ** Call it before zipping folder **
+        Generate short code for wordpress to display proper content;
+        Save file as short_code.txt
+        Return Boolean as a result
+    """
+    codes = ""
+    codes += f'[download link="{config.SITE_URL}{folder_name}/{zip_file_name}"]\n'
+    codes += '[table_start]\n'
+    # for each mp3 file in folder create new [quran] shortcode
+    current_path = os.getcwd()
+    quran_files = os.listdir(current_path)
+    regex = r"(.mp3)"
+    for file in quran_files:
+        if re.search(regex, file):
+            file_name = os.path.join(current_path, file)
+            number = extract_number(file_name)
+            codes += f'[quran src="{folder_name}/{file_name}" number="{number}"]\n'
+    codes += '[table_end]\n'
+    try:
+        file = open('short_code.txt','w')
+        file.write(codes)
+        file.close()
+    except Exception as error:
+        raise("There is some error in writing chortcode in file...")
 
 
 def display_menu():
@@ -170,7 +176,8 @@ def modify_metatag():
             the_mp3.tag.save()
         except:
             continue
-    move_to_subfolder(QARI)
+    generate_short_code(QARI + ".zip",QARI)
+    move_to_subfolder(QARI)    
     return True
 
 
@@ -193,6 +200,7 @@ def move_to_subfolder(folder_name):
             file = os.path.join(current_path, file)
             shutil.move(file, current_path + "/" + folder_name + "/" + folder_name)
     print(f"{Colors.OKGREEN}mp3 files moved into sub folder!{Colors.ENDC}")
+
     # Zip subfolder
     print("Zipping files...")
     shutil.make_archive(folder_name, 'zip',folder_name)
