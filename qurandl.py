@@ -65,7 +65,18 @@ def generate_short_code(zip_file_name,folder_name):
             i = null          
             codes += f'[quran src="{folder_name}/{file_name}" number="{i}"]'
     codes += '[table_end]'
-    pass
+
+
+def extract_number(raw_string):
+    raw_string = raw_string.replace(".mp3", "")
+    raw_string = filter(lambda num:num, raw_string)
+    my_lest = list(raw_string)
+    numbers = ""
+    for char in my_lest:
+        if char.isnumeric():
+            numbers += char
+    return numbers
+
 
 def display_menu():
     """
