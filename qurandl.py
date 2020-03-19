@@ -44,8 +44,16 @@ class FtpUploadTracker:
             clear()
             print(f"{Colors.OKGREEN}{str(percent_complete)} percent uploaded{Colors.ENDC}")
 
+def remove_zero(number):
+    """ Remove zero from beggining of the number string """
+    if number[0] == "0":
+        number = number[1:]
+    if number[0] == "0":
+        number = number[1:]
+    return number
 
 def extract_number(raw_string):
+    """ Extract numbers from a raw string """
     raw_string = raw_string.replace(".mp3", "")
     raw_string = filter(lambda num:num, raw_string)
     my_lest = list(raw_string)
@@ -53,10 +61,11 @@ def extract_number(raw_string):
     for char in my_lest:
         if char.isnumeric():
             numbers += char
+    numbers = remove_zero(numbers)
     return numbers
 
 
-def generate_short_code(zip_file_name,folder_name):
+def generate_short_code(zip_file_name, folder_name):
     """
         ** Call it before zipping folder **
         Generate short code for wordpress to display proper content;
