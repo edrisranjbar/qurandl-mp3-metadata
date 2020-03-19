@@ -45,6 +45,17 @@ class FtpUploadTracker:
         return True
 
 
+def extract_number(raw_string):
+    raw_string = raw_string.replace(".mp3", "")
+    raw_string = filter(lambda num:num, raw_string)
+    my_lest = list(raw_string)
+    numbers = ""
+    for char in my_lest:
+        if char.isnumeric():
+            numbers += char
+    return numbers
+
+
 def display_menu():
     """
         DISPLAY A MENU OF WHAT USER CAN DO
