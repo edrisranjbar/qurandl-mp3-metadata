@@ -11,8 +11,8 @@ Thank you.
 - [x] When we download new mp3 files by this script; it should change metadata too
 - [x] Move ```.mp3``` files to a sub folder with the name of Qari its self
 - [x] Zip folder and finally delete the sub folder
-- [x] Upload zip file into ```qurandl``` download host via ```SFTP```
-- [ ] move upload file in local to parent folder
+- [x] Upload zip file into ```qurandl``` download host via ```FTP```
+- [ ] move uploaded file in local to the parent folder
 - [ ] Extract uploaded file in host
 - [ ] Generate WordPress short code for add new post on [www.qurandl.com]('www.qurandl.com')
 - [ ] Logging

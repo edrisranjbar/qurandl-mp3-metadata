@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 from ftplib import FTP
+import platform
 
 import eyed3 as the_mp3
 import wget
@@ -36,14 +37,35 @@ class FtpUploadTracker:
     def handle(self, block):
         """ HANDLE FTP UPLOAD PROGRESS """
         self.size_written += 1024
-        percent_complete = round((self.size_written / self.total_size) * 100, 2)
+        percent_complete = round((self.size_written / self.total_size) * 100, 1)
 
         if self.last_shown_percent != percent_complete:
             self.last_shown_percent = percent_complete
             clear()
             print(f"{Colors.OKGREEN}{str(percent_complete)} percent uploaded{Colors.ENDC}")
-        return True
 
+
+def generate_short_code(zip_file_name,folder_name):
+    """
+        ** Call it before zipping folder **
+        Generate short code for wordpress to display proper content;
+        Save file as short_code.txt
+        Return Boolean as a result
+    """
+    codes = ""
+    codes += f'[download link="{config.SITE_URL}{folder_name}/{zip_file_name}"]'
+    codes += '[table_start]'
+    # for each mp3 file in folder create new [quran] shortcode
+    current_path = os.getcwd()    
+    quran_files = os.listdir(current_path + "/" + folder_name)
+    regex = r"(.mp3)"
+    for file in quran_files:
+        if re.search(regex, file):
+            file_name = os.path.join(current_path, file)
+            i = null          
+            codes += f'[quran src="{folder_name}/{file_name}" number="{i}"]'
+    codes += '[table_end]'
+    pass
 
 def display_menu():
     """
@@ -83,7 +105,6 @@ def download_all_mp3_files(url):
     """
         DOWNLOAD ALL MP3 FILE IN A WEBPAGE
     """
-    import platform
     if platform.system() == "Windows":
         browser = webdriver.Chrome(executable_path='{}/chromedriver.exe'.format(os.curdir))
     elif platform.system() == "Linux":
@@ -167,7 +188,7 @@ def move_to_subfolder(folder_name):
     print(f"{Colors.OKGREEN}Zipping process completed!{Colors.ENDC}")
     # Remove subfolder
     shutil.rmtree(folder_name)
-    print("Folder removed!")
+    print(f"{Colors.OKGREEN}Folder removed!{Colors.ENDC}")
 
 def upload(filename, server, username, password):
     """ Upload .zip file to dl.qurandl.com and returns True or False """
@@ -193,8 +214,12 @@ def upload(filename, server, username, password):
 
 def clear():
     """ CLEAR THE TERMINAL SCREEN """
-    os.system('clear')
+    if platform.system() == "Windows":
+        os.system('cls')
+    elif platform.system() == "Linux":
+        os.system('clear')
 
 
 if __name__ == "__main__":
-    display_menu()
+    while True:
+        display_menu()
