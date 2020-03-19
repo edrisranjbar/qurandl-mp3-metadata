@@ -83,7 +83,7 @@ def generate_short_code(zip_file_name, folder_name):
         if re.search(regex, file):
             file_name = os.path.join(current_path, file)
             number = extract_number(file_name)
-            codes += f'[quran src="{folder_name}/{file_name}" number="{number}"]\n'
+            codes += f'[quran src="{folder_name}/{file}" number="{number}"]\n'
     codes += '[table_end]\n'
     try:
         file = open('short_code.txt','w')
