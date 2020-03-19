@@ -83,16 +83,26 @@ def download_all_mp3_files(url):
     """
         DOWNLOAD ALL MP3 FILE IN A WEBPAGE
     """
-    browser = webdriver.Chrome(executable_path='{}/chromedriver'.format(os.curdir))
+    import platform
+    if platform.system() == "Windows":
+        browser = webdriver.Chrome(executable_path='{}/chromedriver.exe'.format(os.curdir))
+    elif platform.system() == "Linux":
+        browser = webdriver.Chrome(executable_path='{}/chromedriver'.format(os.curdir))
     browser.get(url)
-    links = browser.find_elements_by_link_text('اضغط هنا للتحمیل')
+    links = browser.find_elements_by_link_text('دانلود کنید')
     for link in links:
         try:
             href = link.get_attribute("href")
             print("DOWNLOADING {}".format(href))
-            wget.download(href)
+            file_name  = wget.filename_from_url(href)
+
+            # download only if file does not exist
+            if not os.path.exists(file_name):
+                wget.download(href)
         except:
             print("Can't download {}".format(link))
+        finally:
+            browser.close()
     print("Download Completed!")
     modify_metatag()
     return True
