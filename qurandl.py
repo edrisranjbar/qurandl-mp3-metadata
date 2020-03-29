@@ -232,8 +232,8 @@ def upload(filename, server, username, password):
     # Upload file
     with open(filename, 'rb') as file:
         ftp.storbinary("STOR " + filename, file, 1024, upload_tracker.handle)
-        # TODO: Extract zip file
-        # TODO: Move zip file into extracted folder
+    # TODO: Extract zip file
+    # TODO: Move zip file into extracted folder
     file.close()
     ftp.quit()
     # Move file locally to parent directory
