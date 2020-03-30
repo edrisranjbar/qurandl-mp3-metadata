@@ -157,8 +157,7 @@ def download_all_mp3_files(url):
 
 def modify_metatag():
     """
-    REMOVE PREVIOUS METADATA AND EMBED
-    OUR META DATA TO MP3 FILES.
+    REMOVE PREVIOUS METADATA AND EMBED NEW ONE
     """
     QARI_NAME = input("Enter qari name: ").title()
     for i in range(1, 115):
@@ -186,7 +185,7 @@ def modify_metatag():
         except:
             continue
     generate_short_code(QARI + ".zip",QARI)
-    move_to_subfolder(QARI)    
+    move_to_subfolder(QARI)
     return True
 
 
