@@ -174,14 +174,14 @@ def modify_metatag():
             remover.delete()
             remover.save()
             # Setting Metadata
-            the_mp3.load(path)
-            the_mp3.delete()
-            the_mp3.tag.artist(QARI_NAME)
-            the_mp3.tag.album("Qurandl")
-            the_mp3.tag.title(title.FILE_TITLES[i])
-            the_mp3.tag.track_num = i
-            the_mp3.tag.images.set(3, open('cover.jpg', 'rb').read(), 'image/jpeg')
-            the_mp3.tag.save()
+            mp3_file = the_mp3.load(path)
+            mp3_file.delete()
+            mp3_file.tag.artist(QARI_NAME)
+            mp3_file.tag.album("Qurandl")
+            mp3_file.tag.title(title.FILE_TITLES[i])
+            mp3_file.tag.track_num = i
+            mp3_file.tag.images.set(3, open('cover.jpg', 'rb').read(), 'image/jpeg')
+            mp3_file.tag.save()
         except:
             continue
     generate_short_code(QARI + ".zip",QARI)
@@ -231,10 +231,10 @@ def upload(filename, server, username, password):
     # Upload file
     with open(filename, 'rb') as file:
         ftp.storbinary("STOR " + filename, file, 1024, upload_tracker.handle)
-    # TODO: Extract zip file
-    # TODO: Move zip file into extracted folder
+    # TODO: Extract zip file (on server side)
+    # TODO: Move zip file into extracted folder (on server side)
     file.close()
-    ftp.quit()
+    ftp.close()
     # Move file locally to parent directory
     shutil.move(file, "..")
     return True
