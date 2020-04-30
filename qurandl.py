@@ -136,7 +136,10 @@ def download_all_mp3_files(url):
     elif platform.system() == "Linux":
         browser = webdriver.Chrome(executable_path='{}/chromedriver'.format(os.curdir))
     browser.get(url)
-    links = browser.find_elements_by_link_text('دانلود کنید')
+    # tvquran xpath for downloading one by one (if complete zip not existed)
+    print("Getting download links...")
+    links = browser.find_elements_by_css_selector('div.listitem-details > div:nth-child(4) > a:nth-child(3)')
+    print("Going to Download mp3 files...")
     for link in links:
         try:
             href = link.get_attribute("href")
@@ -148,8 +151,7 @@ def download_all_mp3_files(url):
                 wget.download(href)
         except:
             print("Can't download {}".format(link))
-        finally:
-            browser.close()
+    browser.close()
     print("Download Completed!")
     modify_metatag()
     return True

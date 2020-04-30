@@ -7,3 +7,5 @@ env
 .vscode
 __pycache__
 config.py
+short_code.txt
+info
